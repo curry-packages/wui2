@@ -2,21 +2,20 @@
 --- Solving Su Doku puzzles in Curry with a web-based interface
 ---
 --- Note that this example requires the CLP.FD solver provided with PAKCS
---- and the package for encapsulated search, which can be installed by:
+--- and the package for set functions. These can be installed by:
 ---
 ---     > cypm add clp-pakcs
----     > cypm add searchtree
+---     > cypm add setfunctions
 ---
 --- @author Michael Hanus
---- @version October 2019
+--- @version August 2020
 -----------------------------------------------------------------------------
 
 import Global
 import List         ( transpose )
-import IO
 
-import CLP.FD     -- requires packages `clp-pakcs`
-import Control.AllSolutions ( getOneValue ) -- requires package `searchtree`
+import CLP.FD               -- requires package `clp-pakcs`
+import Control.SetFunctions -- requires package `setfunctions`
 import HTML.Base
 import HTML.Session
 import HTML.WUI
@@ -26,9 +25,9 @@ import HTML.WUI
 -- variables):
 sudoku :: [[FDExpr]] -> [Int]
 sudoku m = solveFD [FirstFail] (concat m) $
- allC allDifferent m  /\             -- all rows contain different digits
- allC allDifferent (transpose m) /\  -- all columns have different digits
- allC allDifferent (squares m)       -- all 3x3 squares are different
+  allC allDifferent m  /\             -- all rows contain different digits
+  allC allDifferent (transpose m) /\  -- all columns have different digits
+  allC allDifferent (squares m)       -- all 3x3 squares are different
  where
   -- translate a matrix into a list of small 3x3 squares
   squares :: [[a]] -> [[a]]
@@ -58,28 +57,31 @@ wSudoku = wMatrix (wSelect (\i -> if i==0 then " " else show i) [0..9])
 wuiForm :: HtmlFormDef (WuiStore [[Int]])
 wuiForm = wui2FormDef "Sudoku.wuiForm" sudokuStore wSudoku
                       solvePage wuiSimpleRenderer
+ where
+  solvePage :: [[Int]] -> IO [HtmlExp]
+  solvePage m = return $
+    if isEmpty sols
+      then [h1 [htxt "No solution"]]
+      else [h4 [htxt "Solution:"], verbatim $ showSudoku (chooseValue sols)]
+   where sols = set1 solveSudoku m
 
 --- The data stored for executing the WUI form.
 sudokuStore :: Global (SessionStore (WuiStore [[Int]]))
-sudokuStore = global emptySessionStore (Persistent "sudokuStore")
+sudokuStore =
+  global emptySessionStore (Persistent (inSessionDataDir "sudokuStore"))
 
--- the main form to input SuDoKu puzzles:
+-- The main form to input SuDoKu puzzles:
 initPage :: [[Int]] -> IO HtmlPage
 initPage s = do
-  cookie <- sessionCookie  -- be sure that there is a cookie for the session
+  cookie <- sessionCookie   -- be sure that there is a cookie for the session
   setWuiStore sudokuStore s -- initialize WUI store
   return (standardPage "SuDoku" [formExp wuiForm] `addPageParam` cookie)
 
-
-solvePage :: [[Int]] -> IO [HtmlExp]
-solvePage m =
-  getOneValue (solveSudoku m) >>=
-  return . maybe [h1 [htxt "No solution"]]
-                 (\sol -> [h4 [htxt "Solution:"], verbatim $ showSudoku sol])
-
+-- Our main example:
 main :: IO HtmlPage
 main = initPage example
 
+-- A more interesting Sudoku:
 example :: [[Int]]
 example =
   [ [9,0,0,2,0,0,5,0,0]
@@ -92,7 +94,7 @@ example =
   , [0,5,0,0,2,0,0,4,0]
   , [0,0,1,0,0,6,0,0,9] ]
 
--- An empty Sudoku:
+-- A main page with an empty Sudoku:
 emptyPage :: IO HtmlPage
 emptyPage = initPage $ map (const (take 9 (repeat 0))) [1..9]
 
