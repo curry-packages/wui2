@@ -1084,7 +1084,7 @@ wui2HtmlExp wuistore (WuiSpec wparams wshow wcor wread) storepage renderwui
   in renderwui hexp (handler wst)
  where
   handler wst env = do
-    let newval = wread env wst
+    let newval = id $## wread env wst -- ensure that everything is evaluated
     if (wcor wparams) newval
       then do putSessionData wuistore (True, Nothing)
               storepage newval
@@ -1126,7 +1126,7 @@ pwui2HtmlExp wuistore pwuispec storepage renderwui
   in renderwui par hexp (handler wparams wcor wread wst)
  where
   handler wparams wcor wread wst env = do
-    let newval = wread env wst
+    let newval = id $## wread env wst -- ensure that everything is evaluated
     if (wcor wparams) newval
       then do putSessionData wuistore (par, (True, Nothing))
               storepage par newval
