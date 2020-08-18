@@ -7,7 +7,7 @@
 --- [this web page](http://www.informatik.uni-kiel.de/~pakcs/WUI).
 ---
 --- @author Michael Hanus
---- @version October 2019
+--- @version August 2020
 ------------------------------------------------------------------------------
 
 {-# OPTIONS_CYMAKE -Wno-incomplete-patterns #-}
@@ -39,13 +39,12 @@ module HTML.WUI
   )
  where
 
-import Char(isDigit,isSpace)
-import FunctionInversion (invf1)
+import Char              ( isDigit, isSpace )
+import FunctionInversion ( invf1 )
 import Global
-import List(elemIndex)
-import Maybe
-import Read(readNat)
-import ReadShowTerm
+import List              ( elemIndex )
+import Read              ( readNat )
+import ReadShowTerm      ( readQTerm, showQTerm )
 
 import HTML.Base
 import HTML.Session
@@ -1054,8 +1053,8 @@ wui2FormDef :: String
             -> (HtmlExp -> (CgiEnv -> IO [HtmlExp]) -> [HtmlExp])
             -> HtmlFormDef (WuiStore a)
 wui2FormDef formqname wuistore wuispec storepage renderwui =
-  let wuiformdef = HtmlFormDef formqname (getWuiStore wuistore)
-                               (formHtml wuiformdef)
+  let wuiformdef = formDefWithID formqname (getWuiStore wuistore)
+                                 (formHtml wuiformdef)
   in wuiformdef
  where
   formHtml iform sdata =
@@ -1101,8 +1100,8 @@ pwui2FormDef :: String
              -> (b -> HtmlExp -> (CgiEnv -> IO [HtmlExp]) -> [HtmlExp])
              -> HtmlFormDef (b, WuiStore a)
 pwui2FormDef formqname wuistore wuispec storepage renderwui =
-  let wuiformdef = HtmlFormDef formqname (getParWuiStore wuistore)
-                               (formHtml wuiformdef)
+  let wuiformdef = formDefWithID formqname (getParWuiStore wuistore)
+                                 (formHtml wuiformdef)
   in wuiformdef
  where
   formHtml iform sdata =
