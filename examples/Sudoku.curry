@@ -58,7 +58,6 @@ wuiForm :: HtmlFormDef (WuiStore [[Int]])
 wuiForm = wui2FormDef "Sudoku.wuiForm" sudokuStore wSudoku
                       solvePage wuiSimpleRenderer
  where
-  solvePage :: [[Int]] -> IO [HtmlExp]
   solvePage m = return $
     if isEmpty sols
       then [h1 [htxt "No solution"]]

@@ -8,11 +8,11 @@
   "licenseFile": "LICENSE",
   "dependencies": {
     "base" : " >= 1.0.0,  < 2.0.0",
-    "html2": " >= 0.0.1"
+    "html2": " >= 0.0.1, < 1.0.0"
   },
   "compilerCompatibility": {
-    "pakcs": " >= 2.0.0",
-    "kics2": " >= 2.0.0"
+    "pakcs": " >= 2.0.0,  < 3.0.0",
+    "kics2": " >= 2.0.0,  < 3.0.0"
   },
   "source": {
     "git": "https://git.ps.informatik.uni-kiel.de/curry-packages/wui2.git",
