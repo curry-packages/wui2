@@ -8,7 +8,7 @@
 ---     > cypm add setfunctions
 ---
 --- @author Michael Hanus
---- @version August 2020
+--- @version September 2020
 -----------------------------------------------------------------------------
 
 import Global
@@ -74,7 +74,7 @@ initPage :: [[Int]] -> IO HtmlPage
 initPage s = do
   cookie <- sessionCookie   -- be sure that there is a cookie for the session
   setWuiStore sudokuStore s -- initialize WUI store
-  return (standardPage "SuDoku" [formExp wuiForm] `addPageParam` cookie)
+  return (headerPage "SuDoku" [formElem wuiForm] `addPageParam` cookie)
 
 -- Our main example:
 main :: IO HtmlPage

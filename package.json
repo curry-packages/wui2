@@ -1,6 +1,6 @@
 {
   "name": "wui2",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "Michael Hanus <mh@informatik.uni-kiel.de>",
   "synopsis": "Libraries to support the type-oriented construction of web user interfaces based on the html2 package",
   "category": [ "User Interface", "Web" ],
@@ -8,7 +8,7 @@
   "licenseFile": "LICENSE",
   "dependencies": {
     "base" : " >= 1.0.0,  < 2.0.0",
-    "html2": " >= 0.0.1, < 1.0.0"
+    "html2": " >= 1.0.0, < 2.0.0"
   },
   "compilerCompatibility": {
     "pakcs": " >= 2.0.0,  < 3.0.0",

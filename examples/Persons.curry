@@ -11,7 +11,7 @@ import HTML.Session
 import HTML.WUI
 
 -- An action that just shows its argument in HTML format.
-showResult :: Show a => a -> IO [HtmlExp]
+showResult :: Show a => a -> IO [BaseHtml]
 showResult v = return [htxt ("Modified value: "++show v)]
 
 -- A date WUI.
@@ -54,7 +54,7 @@ wuiForm = wui2FormDef "Persons.wuiForm" wuiPersonStore (wList wPerson)
   wuiPersonFormat inputhexp storehandler =
     [inputhexp, breakline,
      button "Submit"
-       (\env -> storehandler env >>= return . standardPage "Person WUI Test")]
+       (\env -> storehandler env >>= return . headerPage "Person WUI Test")]
 
 
 -- The main HTML page containing the form.
@@ -62,8 +62,8 @@ main :: IO HtmlPage
 main = do
   cookie <- sessionCookie  -- be sure that there is a cookie for the session
   setWuiStore wuiPersonStore persons -- initialize WUI store
-  return (standardPage "Person WUI Test"
-            [ formExp wuiForm ] `addPageParam` cookie)
+  return (headerPage "Person WUI Test"
+            [ formElem wuiForm ] `addPageParam` cookie)
 
 -- Some example data.
 persons :: [Person]
