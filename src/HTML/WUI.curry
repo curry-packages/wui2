@@ -57,15 +57,15 @@ infixl 0 `withCondition`
 --- An internal WUI state is used to maintain the cgi references of the input
 --- fields as a structure that corresponds to the structure of the edit data.
 data WuiState =
-     Ref CgiRef             -- reference to elementary input field
+     Ref HtmlRef            -- reference to elementary input field
    | Hidden String          -- string representation of a hidden value
    | CompNode [WuiState]    -- composition of trees (substructures)
    | AltNode (Int,WuiState) -- alternative of trees (union of substructures)
 
-cgiRef2state :: CgiRef -> WuiState
+cgiRef2state :: HtmlRef -> WuiState
 cgiRef2state cr = Ref cr
 
-state2cgiRef :: WuiState -> CgiRef
+state2cgiRef :: WuiState -> HtmlRef
 state2cgiRef (Ref cr) = cr
 
 value2state :: _ -> WuiState
@@ -127,7 +127,7 @@ wuiHandler2button title (WHandler handler) = button title handler
 --- The first component are parameters specifying the behavior of this WUI type
 --- (rendering, error message, and constraints on inputs).
 --- The second component is a "show" function returning an HTML expression for
---- the edit fields and a WUI state containing the CgiRefs to extract
+--- the edit fields and a WUI state containing the HtmlRefs to extract
 --- the values from the edit fields. If the second component of the show
 --- function is `True`, then the WUI condition is not checked for the data,
 --- otherwise the data is rendered with an error message if the
@@ -140,7 +140,7 @@ data WuiSpec a =
   WuiSpec (WuiParams a)
           (WuiParams a -> Bool -> a -> HtmlState)
           (WuiParams a -> a -> Bool)
-          (CgiEnv -> WuiState -> a)
+          (HtmlEnv -> WuiState -> a)
 
 --- Puts a new rendering function into a WUI specification.
 withRendering :: WuiSpec a -> Rendering -> WuiSpec a
@@ -1061,7 +1061,7 @@ wui2FormDef :: String
             -> Global (SessionStore (WuiStore a))
             -> WuiSpec a
             -> (a -> IO [BaseHtml])
-            -> (HtmlExp -> (CgiEnv -> IO [BaseHtml]) -> [HtmlExp])
+            -> (HtmlExp -> (HtmlEnv -> IO [BaseHtml]) -> [HtmlExp])
             -> HtmlFormDef (WuiStore a)
 wui2FormDef formqname wuistore wuispec storepage renderwui =
   let wuiformdef = formDefWithID formqname (getWuiStore wuistore)
@@ -1082,7 +1082,7 @@ wui2FormDef formqname wuistore wuispec storepage renderwui =
 wui2HtmlExp :: Global (SessionStore (WuiStore a))
             -> WuiSpec a
             -> (a -> IO [BaseHtml])
-            -> (HtmlExp -> (CgiEnv -> IO [BaseHtml]) -> [HtmlExp])
+            -> (HtmlExp -> (HtmlEnv -> IO [BaseHtml]) -> [HtmlExp])
             -> HtmlFormDef (WuiStore a)
             -> WuiStore a -> [HtmlExp]
 wui2HtmlExp _ _ _ _ _ (_,Nothing) =
@@ -1108,7 +1108,7 @@ pwui2FormDef :: String
              -> Global (SessionStore (b, WuiStore a))
              -> (b -> WuiSpec a)
              -> (b -> a -> IO [BaseHtml])
-             -> (b -> HtmlExp -> (CgiEnv -> IO [BaseHtml]) -> [HtmlExp])
+             -> (b -> HtmlExp -> (HtmlEnv -> IO [BaseHtml]) -> [HtmlExp])
              -> HtmlFormDef (b, WuiStore a)
 pwui2FormDef formqname wuistore wuispec storepage renderwui =
   let wuiformdef = formDefWithID formqname (getParWuiStore wuistore)
@@ -1123,7 +1123,7 @@ pwui2FormDef formqname wuistore wuispec storepage renderwui =
 pwui2HtmlExp :: Global (SessionStore (b, WuiStore a))
              -> (b -> WuiSpec a)
              -> (b -> a -> IO [BaseHtml])
-             -> (b -> HtmlExp -> (CgiEnv -> IO [BaseHtml]) -> [HtmlExp])
+             -> (b -> HtmlExp -> (HtmlEnv -> IO [BaseHtml]) -> [HtmlExp])
              -> HtmlFormDef (b,WuiStore a)
              -> (b, WuiStore a) -> [HtmlExp]
 pwui2HtmlExp _ _ _ _ _ (_,(_,Nothing)) =
@@ -1146,7 +1146,7 @@ pwui2HtmlExp wuistore pwuispec storepage renderwui
 --- A standard rendering for WUI forms.
 --- The arguments are the HTML expression representing the WUI fields
 --- and the handler for the "submit" button.
-wuiSimpleRenderer :: HtmlExp -> (CgiEnv -> IO [BaseHtml]) -> [HtmlExp]
+wuiSimpleRenderer :: HtmlExp -> (HtmlEnv -> IO [BaseHtml]) -> [HtmlExp]
 wuiSimpleRenderer inputhexp storehandler =
   [inputhexp, breakline,
    button "Submit" (\env -> storehandler env >>= return . page "Answer")]
