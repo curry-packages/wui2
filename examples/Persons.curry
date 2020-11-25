@@ -4,8 +4,7 @@
 module Persons where
 
 import Global
-import Time ( validDate )
-
+import Data.Time ( validDate )
 import HTML.Base
 import HTML.Session
 import HTML.WUI
@@ -67,9 +66,9 @@ main = do
 
 -- Some example data.
 persons :: [Person]
-persons = [("Bob","Carter","bob@carter.com",(3,10,1965))
-          ,("Bill","Jones","billy@acm.org",(29,2,1982))
-          ,("Joe","Smith","smith.org",(20,3,1978))
+persons = [ ("Bob","Carter","bob@carter.com",(3,10,1965))
+          , ("Bill","Jones","billy@acm.org",(29,2,1982))
+          , ("Joe","Smith","smith.org",(20,3,1978))
           ]
 
 -- Install the CGI script in user homepage by:

@@ -12,7 +12,7 @@
 -----------------------------------------------------------------------------
 
 import Global
-import List         ( transpose )
+import Data.List         ( transpose )
 
 import CLP.FD               -- requires package `clp-pakcs`
 import Control.SetFunctions -- requires package `setfunctions`

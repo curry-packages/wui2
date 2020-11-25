@@ -1,18 +1,18 @@
 {
   "name": "wui2",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "author": "Michael Hanus <mh@informatik.uni-kiel.de>",
   "synopsis": "Libraries to support the type-oriented construction of web user interfaces based on the html2 package",
   "category": [ "User Interface", "Web" ],
   "license": "BSD-3-Clause",
   "licenseFile": "LICENSE",
   "dependencies": {
-    "base" : " >= 1.0.0,  < 2.0.0",
-    "html2": " >= 1.0.0, < 2.0.0"
-  },
-  "compilerCompatibility": {
-    "pakcs": " >= 2.0.0,  < 3.0.0",
-    "kics2": " >= 2.0.0,  < 3.0.0"
+    "base"       : " >= 3.0.0, < 4.0.0",
+    "global"     : " >= 3.0.0, < 4.0.0",
+    "html2"      : " >= 3.0.0, < 4.0.0",
+    "inversion"  : " >= 3.0.0, < 4.0.0",
+    "read-legacy": " >= 3.0.0, < 4.0.0",
+    "time"       : " >= 3.0.0, < 4.0.0"
   },
   "source": {
     "git": "https://git.ps.informatik.uni-kiel.de/curry-packages/wui2.git",
