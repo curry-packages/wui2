@@ -1028,7 +1028,7 @@ type WuiStore a = (Bool, Maybe a)
 
 --- Sets the initial data which are edited in a WUI form in the session store.
 setWuiStore :: Global (SessionStore (WuiStore a)) -> a -> IO ()
-setWuiStore wuistore val = writeSessionData wuistore (True, Just val)
+setWuiStore wuistore val = putSessionData wuistore (True, Just val)
 
 --- Reads the data which are edited in a WUI form from the session store.
 getWuiStore :: Global (SessionStore (WuiStore a)) -> FormReader (WuiStore a)
@@ -1038,7 +1038,7 @@ getWuiStore wuistore = getSessionData wuistore (True, Nothing)
 --- in the session store.
 setParWuiStore :: Global (SessionStore (b,WuiStore a)) -> b -> a -> IO ()
 setParWuiStore wuistore par val =
-  writeSessionData wuistore (par, (True, Just val))
+  putSessionData wuistore (par, (True, Just val))
 
 --- Reads the data which are edited in a parameterized WUI form
 --- from the session store.
@@ -1095,9 +1095,9 @@ wui2HtmlExp wuistore (WuiSpec wparams wshow wcor wread) storepage renderwui
   handler wst env = do
     let newval = id $## wread env wst -- ensure that everything is evaluated
     if (wcor wparams) newval
-      then do writeSessionData wuistore (True, Nothing)
+      then do putSessionData wuistore (True, Nothing)
               storepage newval
-      else do writeSessionData wuistore (False, Just newval)
+      else do putSessionData wuistore (False, Just newval)
               return [formElem wuiformdef]
 
 
@@ -1137,9 +1137,9 @@ pwui2HtmlExp wuistore pwuispec storepage renderwui
   handler wparams wcor wread wst env = do
     let newval = id $## wread env wst -- ensure that everything is evaluated
     if (wcor wparams) newval
-      then do writeSessionData wuistore (par, (True, Nothing))
+      then do putSessionData wuistore (par, (True, Nothing))
               storepage par newval
-      else do writeSessionData wuistore (par, (False, Just newval))
+      else do putSessionData wuistore (par, (False, Just newval))
               return [formElem wuiformdef]
 
 --- A standard rendering for WUI forms.
