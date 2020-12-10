@@ -7,7 +7,7 @@
 --- [this web page](http://www.informatik.uni-kiel.de/~pakcs/WUI).
 ---
 --- @author Michael Hanus
---- @version November 2020
+--- @version December 2020
 ------------------------------------------------------------------------------
 
 {-# OPTIONS_CYMAKE -Wno-incomplete-patterns #-}
@@ -173,7 +173,7 @@ transformWSpec (a2b,b2a) (WuiSpec wparamsa showhtmla correcta readvaluea) =
 --- from the old type to the new type. This function must be bijective
 --- and operationally invertible (i.e., the inverse must be computable
 --- by narrowing). Otherwise, use <code>transformWSpec</code>!
-adaptWSpec :: Data a => (a -> b) -> WuiSpec a -> WuiSpec b
+adaptWSpec :: (Data a, Data b) => (a -> b) -> WuiSpec a -> WuiSpec b
 adaptWSpec a2b = transformWSpec (a2b, invf1 a2b)
 
 ------------------------------------------------------------------------------
@@ -424,7 +424,8 @@ wPair (WuiSpec wparamsa showa cora reada) (WuiSpec wparamsb showb corb readb) =
 --- The first argument is the binary constructor.
 --- The second and third arguments are the WUI specifications
 --- for the argument types.
-wCons2 :: (Data a, Data b) => (a->b->c) -> WuiSpec a -> WuiSpec b -> WuiSpec c
+wCons2 :: (Data a, Data b, Data c) =>
+          (a->b->c) -> WuiSpec a -> WuiSpec b -> WuiSpec c
 wCons2 cons (WuiSpec wparamsa showa cora reada)
             (WuiSpec wparamsb showb corb readb) =
   WuiSpec (renderTuple, tupleError, const True) showc corc readc
@@ -478,7 +479,7 @@ wTriple (WuiSpec wparamsa showa cora reada)
 --- WUI combinator for constructors of arity 3.
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
-wCons3 :: (Data a, Data b, Data c) => (a -> b -> c -> d)
+wCons3 :: (Data a, Data b, Data c, Data d) => (a -> b -> c -> d)
        -> WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d
 wCons3 cons (WuiSpec wparamsa showa cora reada)
             (WuiSpec wparamsb showb corb readb)
@@ -519,7 +520,7 @@ w4Tuple wa wb wc wd =
 --- WUI combinator for constructors of arity 4.
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
-wCons4  :: (Data a, Data b, Data c, Data d) => (a->b->c->d->e) ->
+wCons4  :: (Data a, Data b, Data c, Data d, Data e) => (a->b->c->d->e) ->
             WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d -> WuiSpec e
 wCons4 cons wa wb wc wd =
   adaptWSpec (\ ((a,b),(c,d)) -> cons a b c d)
@@ -538,7 +539,7 @@ w5Tuple wa wb wc wd we =
 --- WUI combinator for constructors of arity 5.
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
-wCons5  :: (Data a, Data b, Data c, Data d, Data e) => (a->b->c->d->e->f) ->
+wCons5  :: (Data a, Data b, Data c, Data d, Data e, Data f) => (a->b->c->d->e->f) ->
             WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d -> WuiSpec e ->
             WuiSpec f
 wCons5 cons wa wb wc wd we =
@@ -558,7 +559,8 @@ w6Tuple wa wb wc wd we wf =
 --- WUI combinator for constructors of arity 6.
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
-wCons6  :: (Data a, Data b, Data c, Data d, Data e, Data f) => (a->b->c->d->e->f->g) ->
+wCons6  :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g) =>
+           (a->b->c->d->e->f->g) ->
             WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d -> WuiSpec e ->
             WuiSpec f -> WuiSpec g
 wCons6 cons wa wb wc wd we wf =
@@ -578,7 +580,8 @@ w7Tuple wa wb wc wd we wf wg =
 --- WUI combinator for constructors of arity 7.
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
-wCons7  :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g) => (a->b->c->d->e->f->g->h) ->
+wCons7  :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h) =>
+           (a->b->c->d->e->f->g->h) ->
             WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d -> WuiSpec e ->
             WuiSpec f -> WuiSpec g -> WuiSpec h
 wCons7 cons wa wb wc wd we wf wg =
@@ -598,7 +601,8 @@ w8Tuple wa wb wc wd we wf wg wh =
 --- WUI combinator for constructors of arity 8.
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
-wCons8  :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h) => (a->b->c->d->e->f->g->h->i) ->
+wCons8 :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h, Data i) =>
+          (a->b->c->d->e->f->g->h->i) ->
             WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d -> WuiSpec e ->
             WuiSpec f -> WuiSpec g -> WuiSpec h -> WuiSpec i
 wCons8 cons wa wb wc wd we wf wg wh =
@@ -619,7 +623,7 @@ w9Tuple wa wb wc wd we wf wg wh wi =
 --- WUI combinator for constructors of arity 9.
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
-wCons9  :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h, Data i) => (a->b->c->d->e->f->g->h->i->j) ->
+wCons9  :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h, Data i, Data j) => (a->b->c->d->e->f->g->h->i->j) ->
             WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d -> WuiSpec e ->
             WuiSpec f -> WuiSpec g -> WuiSpec h -> WuiSpec i -> WuiSpec j
 wCons9 cons wa wb wc wd we wf wg wh wi =
@@ -640,7 +644,7 @@ w10Tuple wa wb wc wd we wf wg wh wi wj =
 --- WUI combinator for constructors of arity 10.
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
-wCons10  :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h, Data i, Data j) => (a->b->c->d->e->f->g->h->i->j->k) ->
+wCons10  :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h, Data i, Data j, Data k) => (a->b->c->d->e->f->g->h->i->j->k) ->
             WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d -> WuiSpec e ->
             WuiSpec f -> WuiSpec g -> WuiSpec h -> WuiSpec i -> WuiSpec j ->
             WuiSpec k
@@ -662,7 +666,7 @@ w11Tuple wa wb wc wd we wf wg wh wi wj wk =
 --- WUI combinator for constructors of arity 11.
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
-wCons11 :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h, Data i, Data j, Data k) =>
+wCons11 :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h, Data i, Data j, Data k, Data l) =>
            (a->b->c->d->e->f->g->h->i->j->k->l) ->
            WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d -> WuiSpec e ->
            WuiSpec f -> WuiSpec g -> WuiSpec h -> WuiSpec i -> WuiSpec j ->
@@ -688,7 +692,7 @@ w12Tuple wa wb wc wd we wf wg wh wi wj wk wl =
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
 wCons12  :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h,
-             Data i, Data j, Data k, Data l) =>
+             Data i, Data j, Data k, Data l, Data m) =>
             (a->b->c->d->e->f->g->h->i->j->k->l->m) ->
             WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d -> WuiSpec e ->
             WuiSpec f -> WuiSpec g -> WuiSpec h -> WuiSpec i -> WuiSpec j ->
@@ -715,7 +719,7 @@ w13Tuple wa wb wc wd we wf wg wh wi wj wk wl wm =
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
 wCons13  :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h,
-             Data i, Data j, Data k, Data l, Data m) =>
+             Data i, Data j, Data k, Data l, Data m, Data n) =>
             (a->b->c->d->e->f->g->h->i->j->k->l->m->n) ->
             WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d -> WuiSpec e ->
             WuiSpec f -> WuiSpec g -> WuiSpec h -> WuiSpec i -> WuiSpec j ->
@@ -743,7 +747,7 @@ w14Tuple wa wb wc wd we wf wg wh wi wj wk wl wm wn =
 --- The first argument is the ternary constructor.
 --- The further arguments are the WUI specifications for the argument types.
 wCons14  :: (Data a, Data b, Data c, Data d, Data e, Data f, Data g, Data h,
-             Data i, Data j, Data k, Data l, Data m, Data n) =>
+             Data i, Data j, Data k, Data l, Data m, Data n, Data o) =>
             (a->b->c->d->e->f->g->h->i->j->k->l->m->n->o) ->
             WuiSpec a -> WuiSpec b -> WuiSpec c -> WuiSpec d -> WuiSpec e ->
             WuiSpec f -> WuiSpec g -> WuiSpec h -> WuiSpec i -> WuiSpec j ->
