@@ -10,7 +10,7 @@
 --- @version December 2020
 ------------------------------------------------------------------------------
 
-{-# OPTIONS_CYMAKE -Wno-incomplete-patterns #-}
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns #-}
 
 module HTML.WUI
   ( --WuiState,cgiRef2state,state2cgiRef,value2state,state2value,
