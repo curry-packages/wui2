@@ -46,7 +46,6 @@ import Data.Function.Inversion ( invf1 )
 import Global
 import HTML.Base
 import HTML.Session
-import ReadShowTerm            ( readQTerm, showQTerm )
 
 infixl 0 `withRendering`
 infixl 0 `withError`
@@ -67,11 +66,11 @@ cgiRef2state cr = Ref cr
 state2cgiRef :: WuiState -> HtmlRef
 state2cgiRef (Ref cr) = cr
 
-value2state :: _ -> WuiState
-value2state v = Hidden (showQTerm v)
+value2state :: Show a => a -> WuiState
+value2state v = Hidden (show v)
 
-state2value :: WuiState -> _
-state2value (Hidden s) = readQTerm s
+state2value :: Read a => WuiState -> a
+state2value (Hidden s) = read s
 
 states2state :: [WuiState] -> WuiState
 states2state sts = CompNode sts
@@ -182,7 +181,7 @@ adaptWSpec a2b = transformWSpec (a2b, invf1 a2b)
 --- A hidden widget for a value that is not shown in the WUI.
 --- Usually, this is used in components of larger
 --- structures, e.g., internal identifiers, data base keys.
-wHidden :: WuiSpec a
+wHidden :: (Read a, Show a) => WuiSpec a
 wHidden =
   WuiSpec (head, "?", const True) -- dummy values, not used
           (\_ _ v -> (hempty, value2state v))
@@ -192,7 +191,7 @@ wHidden =
 --- A widget for values that are shown but cannot be modified.
 --- The first argument is a mapping of the value into a HTML expression
 --- to show this value.
-wConstant :: (a -> HtmlExp) -> WuiSpec a
+wConstant :: (Read a, Show a) => (a -> HtmlExp) -> WuiSpec a
 wConstant showhtml =
   WuiSpec (head, "?", const True)
           (\wparams _ v -> ((renderOf wparams) [showhtml v], value2state v))
