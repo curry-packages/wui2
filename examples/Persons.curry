@@ -3,7 +3,6 @@
 
 module Persons where
 
-import Global
 import Data.Time ( validDate )
 import HTML.Base
 import HTML.Session
@@ -41,8 +40,8 @@ wPerson =
   w4Tuple (wRequiredStringSize 12) (wRequiredStringSize 12) wEmail wDate
 
 --- The data stored for executing the WUI form.
-wuiPersonStore :: Global (SessionStore (WuiStore [Person]))
-wuiPersonStore = global emptySessionStore (Persistent "wuiPersonStore")
+wuiPersonStore :: GlobalWuiSessionStore [Person]
+wuiPersonStore = globalSessionData "wuiPersonStore"
 
 --- The WUI form definition for persons.
 --- The store operation simply shows the result.

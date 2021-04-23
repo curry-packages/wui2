@@ -7,7 +7,7 @@
 --- [this web page](http://www.informatik.uni-kiel.de/~pakcs/WUI).
 ---
 --- @author Michael Hanus
---- @version December 2020
+--- @version April 2021
 ------------------------------------------------------------------------------
 
 {-# OPTIONS_FRONTEND -Wno-incomplete-patterns #-}
@@ -34,7 +34,8 @@ module HTML.WUI
     WTree(..),wTree,
     WuiHandler,wuiHandler2button,
     renderTuple,renderTaggedTuple,renderList,
-    WuiStore, setWuiStore, wui2FormDef, setParWuiStore, pwui2FormDef,
+    WuiStore, GlobalWuiSessionStore, setWuiStore, wui2FormDef,
+    GlobalParWuiSessionStore, setParWuiStore, pwui2FormDef,
     wuiSimpleRenderer
   )
  where
@@ -43,7 +44,6 @@ import Data.Char               ( isDigit, isSpace )
 import Data.List               ( elemIndex )
 
 import Data.Function.Inversion ( invf1 )
-import Global
 import HTML.Base
 import HTML.Session
 
@@ -1029,24 +1029,35 @@ mergeRowWithSingleTableData
 --- The second component is `Nothing` if the data is not yet set.
 type WuiStore a = (Bool, Maybe a)
 
+--- A `GlobalWuiSessionStore` is a persistent global entity to store the
+--- information required for WUIs in HTML sessions.
+type GlobalWuiSessionStore a = GlobalSessionStore (WuiStore a)
+
+--- A `GlobalParWuiSessionStore b a` is a persistent global entity to store the
+--- information required for WUIs in HTML sessions which manipulates
+--- data of type `a` and depend on additional information of type `b`.
+type GlobalParWuiSessionStore b a = GlobalSessionStore (b, WuiStore a)
+
 --- Sets the initial data which are edited in a WUI form in the session store.
-setWuiStore :: Global (SessionStore (WuiStore a)) -> a -> IO ()
+setWuiStore :: (Read a, Show a) => GlobalWuiSessionStore a -> a -> IO ()
 setWuiStore wuistore val = putSessionData wuistore (True, Just val)
 
 --- Reads the data which are edited in a WUI form from the session store.
-getWuiStore :: Global (SessionStore (WuiStore a)) -> FormReader (WuiStore a)
+getWuiStore :: (Read a, Show a) =>
+               GlobalWuiSessionStore a -> FormReader (WuiStore a)
 getWuiStore wuistore = getSessionData wuistore (True, Nothing)
 
 --- Sets the initial data which are edited in a parameterized WUI form
 --- in the session store.
-setParWuiStore :: Global (SessionStore (b,WuiStore a)) -> b -> a -> IO ()
+setParWuiStore :: (Read a, Show a, Read b, Show b) =>
+                  GlobalParWuiSessionStore b a -> b -> a -> IO ()
 setParWuiStore wuistore par val =
   putSessionData wuistore (par, (True, Just val))
 
 --- Reads the data which are edited in a parameterized WUI form
 --- from the session store.
-getParWuiStore :: Global (SessionStore (b,WuiStore a))
-               -> FormReader (b,WuiStore a)
+getParWuiStore :: (Read a, Show a, Read b, Show b) =>
+                  GlobalParWuiSessionStore b a -> FormReader (b,WuiStore a)
 getParWuiStore wuistore = getSessionData wuistore (failed, (True, Nothing))
 
 -- Main operations to generate HTML form definitions from WUI specifications:
@@ -1059,8 +1070,9 @@ getParWuiStore wuistore = getSessionData wuistore (failed, (True, Nothing))
 --- an operation to render the WUI (e.g., `wuiSimpleRenderer`), and
 --- which is used when input errors must be corrected,
 --- from the HTML WUI expression and submit handler.
-wui2FormDef :: String
-            -> Global (SessionStore (WuiStore a))
+wui2FormDef :: (Read a, Show a) =>
+               String
+            -> GlobalWuiSessionStore a
             -> WuiSpec a
             -> (a -> IO [BaseHtml])
             -> (HtmlExp -> (HtmlEnv -> IO [BaseHtml]) -> [HtmlExp])
@@ -1081,7 +1093,8 @@ wui2FormDef formqname wuistore wuispec storepage renderwui =
 --- which is used when input errors must be corrected,
 --- an HTML form definition representing the generated form,
 --- and the actual data of the store.
-wui2HtmlExp :: Global (SessionStore (WuiStore a))
+wui2HtmlExp :: (Read a, Show a) =>
+               GlobalWuiSessionStore a
             -> WuiSpec a
             -> (a -> IO [BaseHtml])
             -> (HtmlExp -> (HtmlEnv -> IO [BaseHtml]) -> [HtmlExp])
@@ -1106,8 +1119,9 @@ wui2HtmlExp wuistore (WuiSpec wparams wshow wcor wread) storepage renderwui
 
 --- Generates an HTML form definition similarly to `wui2FormDef`
 --- but with some additional data on which the further arguments depend.
-pwui2FormDef :: String
-             -> Global (SessionStore (b, WuiStore a))
+pwui2FormDef :: (Read a, Show a, Read b, Show b) =>
+                String
+             -> GlobalParWuiSessionStore b a
              -> (b -> WuiSpec a)
              -> (b -> a -> IO [BaseHtml])
              -> (b -> HtmlExp -> (HtmlEnv -> IO [BaseHtml]) -> [HtmlExp])
@@ -1122,7 +1136,8 @@ pwui2FormDef formqname wuistore wuispec storepage renderwui =
 
 --- Generates an HTML form expression similarly to `wui2HtmlExp`
 --- but with some additional data on which the further arguments depend.
-pwui2HtmlExp :: Global (SessionStore (b, WuiStore a))
+pwui2HtmlExp :: (Read a, Show a, Read b, Show b) =>
+                GlobalParWuiSessionStore b a
              -> (b -> WuiSpec a)
              -> (b -> a -> IO [BaseHtml])
              -> (b -> HtmlExp -> (HtmlEnv -> IO [BaseHtml]) -> [HtmlExp])

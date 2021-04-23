@@ -8,10 +8,9 @@
 ---     > cypm add setfunctions
 ---
 --- @author Michael Hanus
---- @version September 2020
+--- @version April 2021
 -----------------------------------------------------------------------------
 
-import Global
 import Data.List         ( transpose )
 
 import CLP.FD               -- requires package `clp-pakcs`
@@ -65,9 +64,8 @@ wuiForm = wui2FormDef "Sudoku.wuiForm" sudokuStore wSudoku
    where sols = set1 solveSudoku m
 
 --- The data stored for executing the WUI form.
-sudokuStore :: Global (SessionStore (WuiStore [[Int]]))
-sudokuStore =
-  global emptySessionStore (Persistent (inSessionDataDir "sudokuStore"))
+sudokuStore :: GlobalWuiSessionStore [[Int]]
+sudokuStore = globalSessionData "sudokuStore"
 
 -- The main form to input SuDoKu puzzles:
 initPage :: [[Int]] -> IO HtmlPage
