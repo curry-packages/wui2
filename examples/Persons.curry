@@ -40,8 +40,8 @@ wPerson =
   w4Tuple (wRequiredStringSize 12) (wRequiredStringSize 12) wEmail wDate
 
 --- The data stored for executing the WUI form.
-wuiPersonStore :: GlobalWuiSessionStore [Person]
-wuiPersonStore = globalSessionData "wuiPersonStore"
+wuiPersonStore :: WuiSessionStore [Person]
+wuiPersonStore = sessionStore "wuiPersonStore"
 
 --- The WUI form definition for persons.
 --- The store operation simply shows the result.

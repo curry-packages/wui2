@@ -8,7 +8,7 @@
 ---     > cypm add setfunctions
 ---
 --- @author Michael Hanus
---- @version April 2021
+--- @version May 2021
 -----------------------------------------------------------------------------
 
 import Data.List         ( transpose )
@@ -64,8 +64,8 @@ wuiForm = wui2FormDef "Sudoku.wuiForm" sudokuStore wSudoku
    where sols = set1 solveSudoku m
 
 --- The data stored for executing the WUI form.
-sudokuStore :: GlobalWuiSessionStore [[Int]]
-sudokuStore = globalSessionData "sudokuStore"
+sudokuStore :: WuiSessionStore [[Int]]
+sudokuStore = sessionStore "sudokuStore"
 
 -- The main form to input SuDoKu puzzles:
 initPage :: [[Int]] -> IO HtmlPage
