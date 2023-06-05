@@ -7,7 +7,7 @@
 --- [this web page](http://www.informatik.uni-kiel.de/~pakcs/WUI).
 ---
 --- @author Michael Hanus
---- @version May 2021
+--- @version June 2023
 ------------------------------------------------------------------------------
 
 {-# OPTIONS_FRONTEND -Wno-incomplete-patterns #-}
@@ -19,6 +19,7 @@ module HTML.WUI
     withRendering,withError,withCondition,adaptWSpec,transformWSpec,
     wHidden,wConstant,wInt,
     wString,wStringSize,wRequiredString,wRequiredStringSize,wTextArea,
+    wPassword, wPasswordSize,
     wSelect,wSelectInt,wSelectBool,wRadioSelect,wRadioBool,wCheckBool,
     wMultiCheckSelect,
     wPair,wTriple,w4Tuple,w5Tuple,w6Tuple,w7Tuple,w8Tuple,
@@ -198,6 +199,7 @@ wConstant showhtml =
           (\_ _ -> True)
           (\_ wst -> state2value wst)
 
+------------------------------------------------------------------------------
 --- A widget for editing integer values.
 wInt :: WuiSpec Int
 wInt =
@@ -233,6 +235,9 @@ checkLegalInput value2widget (render,errmsg,legal) nocheck value =
   if nocheck || legal value
     then value2widget render value
     else value2widget (renderError render errmsg) value
+
+------------------------------------------------------------------------------
+-- WUIs for strings.
 
 --- A predefined filter for processing string inputs.
 --- Here, we replace \r\n by \n:
@@ -292,6 +297,32 @@ wTextArea dims =
   textareaWidget render v = let ref free in
     (render [textArea ref dims v], cgiRef2state ref)
 
+------------------------------------------------------------------------------
+-- WUIs for password which are not visible
+
+--- A widget for entering a password.
+--- The contents is not visible and, nu default,
+--- values are required to be non-empty.
+wPassword :: WuiSpec String
+wPassword = wPasswordAttrs []
+
+--- A widget for entering a password with a size attribute.
+wPasswordSize :: Int -> WuiSpec String
+wPasswordSize size = wPasswordAttrs [("size",show size)]
+
+--- A widget for editing string values with some attributes for the
+--- password field.
+wPasswordAttrs :: [(String,String)] -> WuiSpec String
+wPasswordAttrs attrs =
+  WuiSpec (head, "Missing input:", (not . null))
+          (checkLegalInput passwordWidget)
+          (\wparams -> conditionOf wparams)
+          (\env s -> env (state2cgiRef s))
+ where
+  passwordWidget render _ = let ref free in
+    (render [foldr (flip addAttr) (password ref) attrs], cgiRef2state ref)
+
+------------------------------------------------------------------------------
 --- A widget to select a value from a given list of values.
 --- The current value should be contained in the value list and is preselected.
 --- The first argument is a mapping from values into strings to be shown
