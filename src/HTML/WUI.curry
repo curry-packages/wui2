@@ -301,12 +301,14 @@ wTextArea dims =
 -- WUIs for password which are not visible
 
 --- A widget for entering a password.
---- The contents is not visible and, nu default,
+--- The contents is not visible and, by default,
 --- values are required to be non-empty.
 wPassword :: WuiSpec String
 wPassword = wPasswordAttrs []
 
---- A widget for entering a password with a size attribute.
+--- A widget with a size attribute for entering a password.
+--- The contents is not visible and, by default,
+--- values are required to be non-empty.
 wPasswordSize :: Int -> WuiSpec String
 wPasswordSize size = wPasswordAttrs [("size",show size)]
 
