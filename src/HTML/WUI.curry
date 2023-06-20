@@ -162,7 +162,7 @@ transformWSpec :: (a->b,b->a) -> WuiSpec a -> WuiSpec b
 transformWSpec (a2b,b2a) (WuiSpec wparamsa showhtmla correcta readvaluea) =
   WuiSpec (transParam b2a wparamsa)
           (\wparamsb nchk b -> showhtmla (transParam a2b wparamsb) nchk (b2a b))
-          (\_ b -> correcta wparamsa (b2a b))
+          (\wparamsb b -> correcta wparamsa (b2a b) && conditionOf wparamsb b)
           (\env wst -> a2b (readvaluea env wst))
  where
   transParam :: (b->a) -> WuiParams a -> WuiParams b
@@ -172,7 +172,7 @@ transformWSpec (a2b,b2a) (WuiSpec wparamsa showhtmla correcta readvaluea) =
 --- the first argument must be a transformation mapping values
 --- from the old type to the new type. This function must be bijective
 --- and operationally invertible (i.e., the inverse must be computable
---- by narrowing). Otherwise, use <code>transformWSpec</code>!
+--- by narrowing). Otherwise, use `transformWSpec`!
 adaptWSpec :: (Data a, Data b) => (a -> b) -> WuiSpec a -> WuiSpec b
 adaptWSpec a2b = transformWSpec (a2b, invf1 a2b)
 
@@ -793,7 +793,7 @@ wCons14 cons wa wb wc wd we wf wg wh wi wj wk wl wm wn =
 --- WUI combinator to combine two tuples into a joint tuple.
 --- It is similar to wPair but renders both components as a single
 --- tuple provided that the components are already rendered as tuples,
---- i.e., by the rendering function <code>renderTuple</code>.
+--- i.e., by the rendering function `renderTuple`.
 --- This combinator is useful to define combinators for large tuples.
 wJoinTuple :: (Data a, Data b) => WuiSpec a -> WuiSpec b -> WuiSpec (a,b)
 wJoinTuple (WuiSpec wparamsa showa cora reada)
@@ -803,7 +803,7 @@ wJoinTuple (WuiSpec wparamsa showa cora reada)
   render2joinrender render [h1,h2] =
     let h1s = unRenderTuple h1
         h2s = unRenderTuple h2
-     in render (h1s++h2s)
+     in render (h1s ++ h2s)
 
   showc (render,errmsg,legal) nocheck (va,vb) =
     let (hea,rta) = showa wparamsa nocheck va
