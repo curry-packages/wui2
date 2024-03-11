@@ -13,7 +13,7 @@
     "time"       : " >= 3.0.0, < 4.0.0"
   },
   "source": {
-    "git": "https://git.ps.informatik.uni-kiel.de/curry-packages/wui2.git",
+    "git": "https://github.com/curry-packages/wui2.git",
     "tag": "$version"
   },
   "exportedModules": [ "HTML.WUI" ],
