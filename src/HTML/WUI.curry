@@ -2,9 +2,8 @@
 --- A library to support the type-oriented construction of Web User Interfaces
 --- (WUIs).
 ---
---- The ideas behind the application and implementation of WUIs are
---- described in a paper that is available via
---- [this web page](http://www.informatik.uni-kiel.de/~pakcs/WUI).
+--- The ideas behind the application and implementation of WUIs are described
+--- in a [PPDP 2006 paper](https://doi.org/10.1145/1140335.1140341).
 ---
 --- @author Michael Hanus
 --- @version June 2023
